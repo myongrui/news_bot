@@ -1,0 +1,367 @@
+sources:
+  - id: openai_blog
+    name: OpenAI Blog
+    connector: rss
+    url: https://openai.com/news/rss.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [ai, research]
+    limit: 25
+  - id: anthropic_news
+    name: Anthropic News
+    connector: rss
+    url: https://www.anthropic.com/news/rss.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: false
+    topics: [ai, research]
+    limit: 25
+  - id: google_ai_blog
+    name: Google AI Blog
+    connector: rss
+    url: https://blog.google/technology/ai/rss/
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [ai, cloud]
+    limit: 20
+  - id: nvidia_blog
+    name: NVIDIA Blog
+    connector: rss
+    url: https://blogs.nvidia.com/feed/
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [semiconductors, ai]
+    limit: 20
+  - id: techcrunch_ai
+    name: TechCrunch AI
+    connector: rss
+    url: https://techcrunch.com/category/artificial-intelligence/feed/
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [ai, startups]
+    limit: 20
+  - id: the_verge
+    name: The Verge
+    connector: rss
+    url: https://www.theverge.com/rss/index.xml
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [tech]
+    limit: 20
+  - id: cnbc_tech
+    name: CNBC Tech
+    connector: rss
+    url: https://www.cnbc.com/id/19854910/device/rss/rss.html
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [tech, markets, ai]
+    limit: 20
+  - id: cnbc_investing
+    name: CNBC Investing
+    connector: rss
+    url: https://www.cnbc.com/id/15839069/device/rss/rss.html
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [markets, blue_chips, analyst_ratings]
+    limit: 20
+  - id: cnbc_top_news
+    name: CNBC US Top News
+    connector: rss
+    url: https://www.cnbc.com/id/100003114/device/rss/rss.html
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [markets, policy]
+    limit: 15
+  - id: marketwatch_top_stories
+    name: MarketWatch Top Stories
+    connector: rss
+    url: https://feeds.marketwatch.com/marketwatch/topstories/
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [markets, blue_chips, analyst_ratings]
+    limit: 20
+  - id: mit_technology_review
+    name: MIT Technology Review
+    connector: rss
+    url: https://www.technologyreview.com/feed/
+    trust_tier: trusted_media
+    source_role: deep_analysis
+    enabled: true
+    topics: [ai, research, tech, policy]
+    limit: 15
+  - id: ars_technica
+    name: Ars Technica
+    connector: rss
+    url: https://feeds.arstechnica.com/arstechnica/index
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [tech, cybersecurity, developer_tools, policy]
+    limit: 20
+  - id: wired_ai
+    name: WIRED AI
+    connector: rss
+    url: https://www.wired.com/feed/tag/ai/latest/rss
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [ai, tech, policy]
+    limit: 15
+  - id: venturebeat_ai
+    name: VentureBeat AI
+    connector: rss
+    url: https://venturebeat.com/category/ai/feed/
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [ai, startups, tech]
+    limit: 15
+  - id: aws_machine_learning
+    name: AWS Machine Learning Blog
+    connector: rss
+    url: https://aws.amazon.com/blogs/machine-learning/feed/
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [ai, cloud, developer_tools]
+    limit: 20
+  - id: aws_whats_new
+    name: AWS What's New
+    connector: rss
+    url: https://aws.amazon.com/about-aws/whats-new/recent/feed/
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [cloud, developer_tools, devops]
+    limit: 25
+  - id: aws_news_blog
+    name: AWS News Blog
+    connector: rss
+    url: https://aws.amazon.com/blogs/aws/feed/
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [cloud, ai, devops]
+    limit: 20
+  - id: gcp_release_notes
+    name: Google Cloud Release Notes
+    connector: rss
+    url: https://cloud.google.com/feeds/gcp-release-notes.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [cloud, developer_tools, devops]
+    limit: 25
+  - id: openai_developers
+    name: OpenAI Developers
+    connector: rss
+    url: https://developers.openai.com/rss.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [ai, developer_tools]
+    limit: 25
+  - id: openai_codex_changelog
+    name: OpenAI Codex Changelog
+    connector: rss
+    url: https://developers.openai.com/codex/changelog/rss.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [ai, developer_tools, devops]
+    limit: 20
+  - id: github_changelog
+    name: GitHub Changelog
+    connector: rss
+    url: https://github.blog/changelog/feed/
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [developer_tools, devops]
+    limit: 20
+  - id: github_blog
+    name: GitHub Blog
+    connector: rss
+    url: https://github.blog/feed/
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [developer_tools, ai, devops]
+    limit: 15
+  - id: cloudflare_blog
+    name: Cloudflare Blog
+    connector: rss
+    url: https://blog.cloudflare.com/rss/
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [cloud, cybersecurity, developer_tools, devops]
+    limit: 20
+  - id: cloudflare_changelog
+    name: Cloudflare Changelog
+    connector: rss
+    url: https://developers.cloudflare.com/changelog/rss.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [cloud, developer_tools, devops]
+    limit: 25
+  - id: vercel_changelog
+    name: Vercel Changelog
+    connector: rss
+    url: https://vercel.com/changelog/rss
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [developer_tools, cloud, devops]
+    limit: 20
+  - id: langchain_changelog
+    name: LangChain Changelog
+    connector: rss
+    url: https://changelog.langchain.com/feed.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [ai, developer_tools]
+    limit: 20
+  - id: langchain_blog
+    name: LangChain Blog
+    connector: rss
+    url: https://www.langchain.com/blog/rss.xml
+    trust_tier: trusted_media
+    source_role: deep_analysis
+    enabled: true
+    topics: [ai, developer_tools, research]
+    limit: 15
+  - id: huggingface_blog
+    name: Hugging Face Blog
+    connector: rss
+    url: https://huggingface.co/blog/feed.xml
+    trust_tier: trusted_media
+    source_role: deep_analysis
+    enabled: true
+    topics: [ai, research, developer_tools]
+    limit: 20
+  - id: hacker_news
+    name: Hacker News
+    connector: hn
+    url: https://hacker-news.firebaseio.com/v0
+    trust_tier: community_social
+    source_role: fast_signal
+    enabled: true
+    topics: [tech, ai]
+    limit: 30
+  - id: arxiv_ai
+    name: arXiv AI and ML
+    connector: arxiv
+    url: https://export.arxiv.org/api/query
+    trust_tier: research
+    source_role: deep_analysis
+    enabled: true
+    topics: [ai, research]
+    query: cat:cs.AI OR cat:cs.LG OR cat:cs.CL
+    limit: 20
+  - id: sec_filings
+    name: SEC EDGAR Filings
+    connector: sec
+    url: https://data.sec.gov
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [markets, filings]
+    forms: [8-K, 10-K, 10-Q, S-1]
+  - id: sec_press_releases
+    name: SEC Press Releases
+    connector: rss
+    url: https://www.sec.gov/news/pressreleases.rss
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [markets, filings, policy]
+    limit: 20
+  - id: nist_news
+    name: NIST News
+    connector: rss
+    url: https://www.nist.gov/news-events/news/rss.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [policy, ai, cybersecurity]
+    limit: 20
+  - id: gdelt_ai_markets
+    name: GDELT AI and Markets
+    connector: gdelt
+    url: https://api.gdeltproject.org/api/v2/doc/doc
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [ai, markets, tech]
+    query: '(AI OR "artificial intelligence" OR semiconductor OR Nvidia OR OpenAI) (stock OR market OR earnings OR launch OR regulation)'
+    limit: 30
+  - id: gdelt_blue_chip_markets
+    name: GDELT Blue-Chip Markets
+    connector: gdelt
+    url: https://api.gdeltproject.org/api/v2/doc/doc
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [markets, blue_chips]
+    query: '("Apple" OR Microsoft OR Nvidia OR Amazon OR Alphabet OR Meta OR Tesla OR JPMorgan OR Visa OR Mastercard OR "UnitedHealth" OR "Eli Lilly" OR Berkshire OR Costco OR Walmart) (earnings OR guidance OR revenue OR margin OR buyback OR dividend OR valuation OR "free cash flow")'
+    limit: 30
+  - id: gdelt_analyst_ratings
+    name: GDELT Analyst Ratings and Price Targets
+    connector: gdelt
+    url: https://api.gdeltproject.org/api/v2/doc/doc
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [markets, blue_chips, analyst_ratings]
+    query: '("price target" OR "target price" OR upgrade OR downgrade OR "initiated coverage" OR reiterates OR overweight OR underweight OR outperform OR "market perform") (Nvidia OR Microsoft OR Apple OR Amazon OR Alphabet OR Meta OR Tesla OR JPMorgan OR Visa OR Mastercard OR Costco OR Walmart OR "Eli Lilly" OR Berkshire)'
+    limit: 30
+  - id: reddit_ai_markets
+    name: Reddit AI and Stocks
+    connector: reddit
+    url: https://oauth.reddit.com
+    trust_tier: community_social
+    source_role: fast_signal
+    enabled: true
+    topics: [ai, markets, social]
+    subreddits: [MachineLearning, LocalLLaMA, technology, stocks, investing]
+    limit: 15
+  - id: reddit_blue_chip_discussions
+    name: Reddit Blue-Chip Investing Discussions
+    connector: reddit
+    url: https://oauth.reddit.com
+    trust_tier: community_social
+    source_role: fast_signal
+    enabled: true
+    topics: [markets, blue_chips, analyst_ratings, social]
+    subreddits: [stocks, investing, StockMarket, SecurityAnalysis, ValueInvesting]
+    limit: 15
+  - id: x_ai_markets
+    name: X AI and Markets
+    connector: x
+    url: https://api.x.com/2/tweets/search/recent
+    trust_tier: community_social
+    source_role: fast_signal
+    enabled: false
+    topics: [ai, markets, social]
+    query: '(AI OR OpenAI OR Nvidia OR semiconductor OR earnings) -is:retweet lang:en'
+    limit: 25
+  - id: uploads
+    name: Manual Uploads
+    connector: uploads
+    url: file://data/uploads
+    trust_tier: research
+    source_role: deep_analysis
+    enabled: true
+    topics: [research, markets]

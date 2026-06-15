@@ -1,0 +1,145 @@
+tickers:
+  - symbol: NVDA
+    name: NVIDIA
+    aliases: [Nvidia, NVIDIA Corporation, GeForce, CUDA]
+    cik: "0001045810"
+  - symbol: AMD
+    name: Advanced Micro Devices
+    aliases: [AMD, Advanced Micro Devices, Radeon, Instinct]
+    cik: "0000002488"
+  - symbol: AVGO
+    name: Broadcom
+    aliases: [Broadcom, VMware]
+    cik: "0001730168"
+  - symbol: TSM
+    name: Taiwan Semiconductor Manufacturing
+    aliases: [TSMC, Taiwan Semiconductor]
+    cik: "0001046179"
+  - symbol: ASML
+    name: ASML
+    aliases: [ASML, lithography]
+    cik: "0000937966"
+  - symbol: MSFT
+    name: Microsoft
+    aliases: [Microsoft, Azure, OpenAI partner]
+    cik: "0000789019"
+  - symbol: GOOGL
+    name: Alphabet
+    aliases: [Google, Alphabet, DeepMind, Gemini]
+    cik: "0001652044"
+  - symbol: AMZN
+    name: Amazon
+    aliases: [Amazon, AWS, Amazon Web Services, Anthropic partner]
+    cik: "0001018724"
+  - symbol: META
+    name: Meta Platforms
+    aliases: [Meta, Facebook, Instagram, Llama]
+    cik: "0001326801"
+  - symbol: AAPL
+    name: Apple
+    aliases: [Apple, iPhone, Apple Intelligence]
+    cik: "0000320193"
+  - symbol: TSLA
+    name: Tesla
+    aliases: [Tesla, xAI, Optimus, FSD]
+    cik: "0001318605"
+  - symbol: ORCL
+    name: Oracle
+    aliases: [Oracle, OCI, Oracle Cloud]
+    cik: "0001341439"
+  - symbol: PLTR
+    name: Palantir
+    aliases: [Palantir, AIP]
+    cik: "0001321655"
+  - symbol: ARM
+    name: Arm Holdings
+    aliases: [Arm Holdings, ARM architecture]
+    cik: "0001973239"
+  - symbol: SMCI
+    name: Super Micro Computer
+    aliases: [Supermicro, Super Micro]
+    cik: "0001375365"
+  - symbol: MU
+    name: Micron Technology
+    aliases: [Micron, HBM, DRAM]
+    cik: "0000723125"
+  - symbol: JPM
+    name: JPMorgan Chase
+    aliases: [JPMorgan, JPMorgan Chase, JP Morgan]
+    cik: "0000019617"
+  - symbol: V
+    name: Visa
+    aliases: [Visa]
+    cik: "0001403161"
+  - symbol: MA
+    name: Mastercard
+    aliases: [Mastercard, MasterCard]
+    cik: "0001141391"
+  - symbol: UNH
+    name: UnitedHealth Group
+    aliases: [UnitedHealth, United Health, Optum]
+    cik: "0000731766"
+  - symbol: JNJ
+    name: Johnson & Johnson
+    aliases: [Johnson & Johnson, J&J]
+    cik: "0000200406"
+  - symbol: XOM
+    name: Exxon Mobil
+    aliases: [Exxon, ExxonMobil, Exxon Mobil]
+    cik: "0000034088"
+  - symbol: PG
+    name: Procter & Gamble
+    aliases: [Procter & Gamble, P&G]
+    cik: "0000080424"
+  - symbol: COST
+    name: Costco Wholesale
+    aliases: [Costco]
+    cik: "0000909832"
+  - symbol: HD
+    name: Home Depot
+    aliases: [Home Depot, The Home Depot]
+    cik: "0000354950"
+  - symbol: WMT
+    name: Walmart
+    aliases: [Walmart, Wal-Mart]
+    cik: "0000104169"
+  - symbol: BAC
+    name: Bank of America
+    aliases: [Bank of America, BofA]
+    cik: "0000070858"
+  - symbol: NFLX
+    name: Netflix
+    aliases: [Netflix]
+    cik: "0001065280"
+  - symbol: CRM
+    name: Salesforce
+    aliases: [Salesforce, Salesforce.com]
+    cik: "0001108524"
+  - symbol: ADBE
+    name: Adobe
+    aliases: [Adobe]
+    cik: "0000796343"
+  - symbol: NOW
+    name: ServiceNow
+    aliases: [ServiceNow]
+    cik: "0001373715"
+  - symbol: QCOM
+    name: Qualcomm
+    aliases: [Qualcomm, Snapdragon]
+    cik: "0000804328"
+  - symbol: TXN
+    name: Texas Instruments
+    aliases: [Texas Instruments]
+    cik: "0000097476"
+  - symbol: LLY
+    name: Eli Lilly
+    aliases: [Eli Lilly, Lilly]
+    cik: "0000059478"
+  - symbol: MRK
+    name: Merck
+    aliases: [Merck]
+    cik: "0000310158"
+  - symbol: BRK.B
+    name: Berkshire Hathaway
+    aliases: [Berkshire, Berkshire Hathaway, Warren Buffett]
+    cik: "0001067983"

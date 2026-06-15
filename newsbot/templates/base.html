@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} · Newsbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">Newsbot</a>
+      <nav>
+        <a href="/">Daily</a>
+        <a href="/week/{{ current_week | default('') }}">Weekly</a>
+        <a href="/topic/ai">AI</a>
+        <a href="/topic/markets">Markets</a>
+        <a href="/upload">Uploads</a>
+        <a href="/health">Health</a>
+      </nav>
+    </header>
+    <main class="shell">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>
+

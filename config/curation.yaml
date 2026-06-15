@@ -1,0 +1,219 @@
+curation:
+  max_item_age_days: 14
+  min_text_chars: 120
+
+  priority_topics:
+    - ai
+    - semiconductors
+    - cloud
+    - cybersecurity
+    - markets
+    - blue_chips
+    - analyst_ratings
+    - filings
+    - policy
+    - research
+    - developer_tools
+    - devops
+
+  priority_tickers:
+    - NVDA
+    - AMD
+    - AVGO
+    - TSM
+    - ASML
+    - MSFT
+    - GOOGL
+    - AMZN
+    - META
+    - AAPL
+    - TSLA
+    - ORCL
+    - PLTR
+    - ARM
+    - SMCI
+    - MU
+    - JPM
+    - V
+    - MA
+    - UNH
+    - JNJ
+    - XOM
+    - PG
+    - COST
+    - HD
+    - WMT
+    - BAC
+    - NFLX
+    - CRM
+    - ADBE
+    - NOW
+    - QCOM
+    - TXN
+    - LLY
+    - MRK
+    - BRK.B
+
+  required_any_keywords:
+    - ai
+    - artificial intelligence
+    - llm
+    - model
+    - agent
+    - inference
+    - training
+    - gpu
+    - semiconductor
+    - chip
+    - datacenter
+    - data center
+    - cloud
+    - cybersecurity
+    - earnings
+    - guidance
+    - analyst
+    - price target
+    - target price
+    - upgrade
+    - downgrade
+    - initiated coverage
+    - rating
+    - overweight
+    - underweight
+    - outperform
+    - market perform
+    - equal weight
+    - valuation
+    - blue chip
+    - mega cap
+    - large cap
+    - buyback
+    - dividend
+    - free cash flow
+    - margin
+    - filing
+    - sec
+    - regulation
+    - regulator
+    - rulemaking
+    - enforcement
+    - antitrust
+    - export controls
+    - ai safety
+    - policy
+    - ftc
+    - doj
+    - nist
+    - bis
+    - research
+    - benchmark
+    - changelog
+    - release notes
+    - copilot
+    - codex
+    - claude code
+    - cursor
+    - github
+    - vercel
+    - cloudflare
+    - workers
+    - langchain
+    - langgraph
+    - langsmith
+    - hugging face
+    - mcp
+    - developer tools
+    - coding agent
+    - agentic coding
+
+  blocked_keywords:
+    - sponsored
+    - advertorial
+    - coupon
+    - giveaway
+    - webinar
+    - event recap
+    - hiring
+    - job opening
+    - podcast transcript
+    - newsletter signup
+
+alerts:
+  max_per_run: 5
+  min_reliability_score: 0.85
+  min_frontier_score: 68
+  max_age_hours: 72
+  require_priority_topic_or_ticker: true
+  suppress_social_only: true
+
+digests:
+  daily_max_clusters: 20
+  weekly_max_clusters: 50
+  include_social_signals: true
+  social_signal_limit: 8
+
+frontier:
+  technical_keywords:
+    - agent
+    - agents
+    - benchmark
+    - benchmarks
+    - eval
+    - evals
+    - evaluation
+    - frontier model
+    - gpu
+    - hbm
+    - inference
+    - model release
+    - open weights
+    - reasoning
+    - research
+    - training
+    - changelog
+    - copilot
+    - codex
+    - claude code
+    - cursor
+    - github actions
+    - langchain
+    - langgraph
+    - langsmith
+    - mcp
+    - agentic coding
+    - coding agent
+  market_keywords:
+    - 8-k
+    - 10-k
+    - 10-q
+    - capex
+    - capital expenditure
+    - datacenter
+    - data center
+    - earnings
+    - filing
+    - guidance
+    - partnership
+    - price target
+    - target price
+    - upgrade
+    - downgrade
+    - initiated coverage
+    - rating
+    - valuation
+    - buyback
+    - dividend
+    - free cash flow
+    - revenue
+    - regulation
+    - regulator
+    - rulemaking
+    - enforcement
+    - antitrust
+    - export controls
+    - ai safety
+    - ftc
+    - doj
+    - nist
+    - bis
+    - sec

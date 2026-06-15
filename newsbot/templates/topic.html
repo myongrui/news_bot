@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h1>{{ topic.name }}</h1>
+  </div>
+  <div class="stats">
+    <span>{{ clusters | length }} stories</span>
+  </div>
+</section>
+<section class="story-grid">
+  {% for cluster in clusters %}
+  {% include "_cluster.html" %}
+  {% else %}
+  <div class="empty">No stories captured for this topic.</div>
+  {% endfor %}
+</section>
+{% endblock %}
+

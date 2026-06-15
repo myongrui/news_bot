@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "newsbot"
+version = "0.1.0"
+description = "Personal tech, AI, stocks, and research news intelligence bot."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "apscheduler>=3.10.4",
+  "fastapi>=0.115.0",
+  "feedparser>=6.0.11",
+  "httpx>=0.27.0",
+  "jinja2>=3.1.4",
+  "pydantic>=2.8.0",
+  "pydantic-settings>=2.4.0",
+  "pymupdf>=1.24.0",
+  "python-multipart>=0.0.9",
+  "pyyaml>=6.0.2",
+  "trafilatura>=1.12.0",
+  "uvicorn[standard]>=0.30.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "respx>=0.21.1",
+]
+
+[project.scripts]
+newsbot = "newsbot.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.hatch.build.targets.wheel]
+packages = ["newsbot"]
+include = [
+  "newsbot/templates/**",
+  "newsbot/static/**",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

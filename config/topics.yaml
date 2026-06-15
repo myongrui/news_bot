@@ -1,0 +1,171 @@
+topics:
+  - slug: ai
+    name: AI
+    keywords:
+      - artificial intelligence
+      - ai
+      - llm
+      - foundation model
+      - reasoning model
+      - generative ai
+      - inference
+      - training
+  - slug: semiconductors
+    name: Semiconductors
+    keywords:
+      - semiconductor
+      - chip
+      - gpu
+      - accelerator
+      - hbm
+      - foundry
+      - lithography
+  - slug: cloud
+    name: Cloud
+    keywords:
+      - cloud
+      - datacenter
+      - data center
+      - azure
+      - aws
+      - google cloud
+      - oracle cloud
+  - slug: cybersecurity
+    name: Cybersecurity
+    keywords:
+      - cybersecurity
+      - security
+      - breach
+      - vulnerability
+      - ransomware
+      - exploit
+  - slug: markets
+    name: Markets
+    keywords:
+      - stock
+      - stocks
+      - earnings
+      - revenue
+      - guidance
+      - market
+      - shares
+      - analyst
+      - valuation
+      - buyback
+      - dividend
+      - free cash flow
+      - margin
+  - slug: blue_chips
+    name: Blue-Chip Stocks
+    keywords:
+      - blue chip
+      - mega cap
+      - large cap
+      - dow
+      - s&p 500
+      - dividend aristocrat
+      - quality compounder
+      - wide moat
+      - buyback
+      - dividend
+  - slug: analyst_ratings
+    name: Analyst Ratings
+    keywords:
+      - analyst
+      - price target
+      - target price
+      - upgrade
+      - downgrade
+      - rating
+      - initiated coverage
+      - reiterates
+      - overweight
+      - underweight
+      - outperform
+      - market perform
+      - equal weight
+      - buy rating
+      - sell rating
+  - slug: filings
+    name: Filings
+    keywords:
+      - 8-k
+      - 10-k
+      - 10-q
+      - s-1
+      - sec
+      - filing
+      - annual report
+      - quarterly report
+  - slug: policy
+    name: Policy and Regulation
+    keywords:
+      - regulation
+      - regulator
+      - rulemaking
+      - enforcement
+      - antitrust
+      - export controls
+      - ai safety
+      - policy
+      - sec
+      - ftc
+      - doj
+      - nist
+      - bis
+  - slug: research
+    name: Research
+    keywords:
+      - paper
+      - research
+      - arxiv
+      - benchmark
+      - evaluation
+      - dataset
+  - slug: startups
+    name: Startups
+    keywords:
+      - startup
+      - funding
+      - venture
+      - seed round
+      - series a
+      - acquisition
+  - slug: social
+    name: Social Signals
+    keywords:
+      - reddit
+      - hacker news
+      - discussion
+      - thread
+  - slug: developer_tools
+    name: Developer Tools
+    keywords:
+      - developer tools
+      - copilot
+      - codex
+      - claude code
+      - cursor
+      - github
+      - vercel
+      - cloudflare workers
+      - langchain
+      - langgraph
+      - langsmith
+      - mcp
+      - vscode
+      - agentic coding
+      - coding agent
+  - slug: devops
+    name: DevOps and Platform
+    keywords:
+      - devops
+      - kubernetes
+      - docker
+      - ci/cd
+      - github actions
+      - deployment
+      - serverless
+      - observability
+      - release notes
+      - changelog

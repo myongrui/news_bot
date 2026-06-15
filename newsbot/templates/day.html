@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h1>{{ title }}</h1>
+    {% if digest_payload.overview %}
+    <p>{{ digest_payload.overview }}</p>
+    {% endif %}
+  </div>
+  <div class="stats">
+    <span>{{ counts.story_clusters }} stories</span>
+    <span>{{ counts.documents }} docs</span>
+    <span>{{ counts.telegram_messages }} messages</span>
+  </div>
+</section>
+
+{% if digest_payload.key_points %}
+<section class="band">
+  <h2>Key Points</h2>
+  <ul class="tight-list">
+    {% for point in digest_payload.key_points %}
+    <li>{{ point }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="story-grid">
+  {% for cluster in clusters %}
+  {% include "_cluster.html" %}
+  {% else %}
+  <div class="empty">No stories captured yet.</div>
+  {% endfor %}
+</section>
+{% endblock %}
+

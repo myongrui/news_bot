@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h1>Health</h1>
+  </div>
+  <div class="stats">
+    <span>Scheduler {{ "on" if scheduler_running else "off" }}</span>
+    <span>OpenAI {{ "set" if settings.openai_configured else "missing" }}</span>
+    <span>Telegram {{ "set" if settings.telegram_configured else "missing" }}</span>
+  </div>
+</section>
+<section class="band">
+  <h2>Counts</h2>
+  <div class="metric-grid">
+    {% for key, value in counts.items() %}
+    <div class="metric"><span>{{ key }}</span><strong>{{ value }}</strong></div>
+    {% endfor %}
+  </div>
+</section>
+<section class="band">
+  <h2>Sources</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Source</th>
+        <th>Connector</th>
+        <th>Status</th>
+        <th>Items</th>
+        <th>Last Checked</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for source in sources %}
+      <tr>
+        <td>{{ source.name }}</td>
+        <td>{{ source.connector }}</td>
+        <td>{{ source.status or "pending" }}</td>
+        <td>{{ source.items_seen or 0 }}</td>
+        <td>{{ source.checked_at or "" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
+
