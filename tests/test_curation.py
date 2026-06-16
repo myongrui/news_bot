@@ -73,3 +73,67 @@ def test_alert_curation_rejects_low_frontier_score():
 
     assert decision.keep is False
     assert decision.reason == "frontier_score_below_threshold"
+
+
+def _social_alert_policy():
+    return CurationPolicy(
+        {
+            "curation": {"priority_topics": ["ai"], "priority_tickers": ["NVDA"]},
+            "alerts": {
+                "min_frontier_score": 60,
+                "suppress_social_only": False,
+                "min_engagement_for_social_alert": 0.55,
+            },
+        }
+    )
+
+
+def test_high_buzz_social_alert_is_allowed():
+    decision = _social_alert_policy().alert_allowed(
+        reliability_allowed=False,  # single social source: reliability gate would normally block
+        reliability_score=0.42,
+        frontier_score=80,
+        topics=["startups"],  # no priority topic — high buzz bypasses the watchlist requirement
+        tickers=[],
+        social_only=True,
+        engagement=0.8,
+    )
+
+    assert decision.keep is True
+
+
+def test_low_buzz_social_alert_is_suppressed():
+    decision = _social_alert_policy().alert_allowed(
+        reliability_allowed=False,
+        reliability_score=0.42,
+        frontier_score=80,
+        topics=["ai"],
+        tickers=[],
+        social_only=True,
+        engagement=0.2,
+    )
+
+    assert decision.keep is False
+    assert decision.reason == "social_buzz_below_threshold"
+
+
+def test_context_only_blog_is_held_back():
+    policy = CurationPolicy(
+        {
+            "curation": {"priority_topics": ["ai"], "priority_tickers": ["NVDA"]},
+            "digests": {"min_buzz_for_blog_only": 0.15},
+        }
+    )
+
+    quiet_blog = {
+        "buzz_score": 0.0,
+        "is_social_signal": False,
+        "topic_slugs_json": '["startups"]',
+        "ticker_symbols_json": "[]",
+    }
+    discussed_blog = {**quiet_blog, "buzz_score": 0.4}
+    watchlist_blog = {**quiet_blog, "topic_slugs_json": '["ai"]'}
+
+    assert policy.is_context_only(quiet_blog) is True
+    assert policy.is_context_only(discussed_blog) is False
+    assert policy.is_context_only(watchlist_blog) is False

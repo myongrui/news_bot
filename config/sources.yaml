@@ -254,12 +254,14 @@ sources:
   - id: hacker_news
     name: Hacker News
     connector: hn
-    url: https://hacker-news.firebaseio.com/v0
+    url: https://hn.algolia.com/api/v1
     trust_tier: community_social
     source_role: fast_signal
     enabled: true
     topics: [tech, ai]
-    limit: 30
+    tags: front_page
+    min_points: 50
+    limit: 50
   - id: arxiv_ai
     name: arXiv AI and ML
     connector: arxiv
@@ -335,7 +337,7 @@ sources:
     source_role: fast_signal
     enabled: true
     topics: [ai, markets, social]
-    subreddits: [MachineLearning, LocalLLaMA, technology, stocks, investing]
+    subreddits: [MachineLearning, LocalLLaMA, technology, stocks, investing, singularity, OpenAI]
     limit: 15
   - id: reddit_blue_chip_discussions
     name: Reddit Blue-Chip Investing Discussions
@@ -345,18 +347,189 @@ sources:
     source_role: fast_signal
     enabled: true
     topics: [markets, blue_chips, analyst_ratings, social]
-    subreddits: [stocks, investing, StockMarket, SecurityAnalysis, ValueInvesting]
+    subreddits: [stocks, investing, StockMarket, SecurityAnalysis, ValueInvesting, wallstreetbets]
     limit: 15
-  - id: x_ai_markets
-    name: X AI and Markets
+  # No-API X: unauthenticated syndication timelines for a curated handle list (best-effort).
+  # DISABLED by default: X hard-throttles (HTTP 429) the syndication endpoint from datacenter
+  # IPs. To enable, set enabled: true AND point `url` at a residential egress / proxy / mirror
+  # of https://syndication.twitter.com. From a residential IP the default host works as-is.
+  - id: x_ai
+    name: X AI Voices
     connector: x
-    url: https://api.x.com/2/tweets/search/recent
+    url: https://syndication.twitter.com
     trust_tier: community_social
     source_role: fast_signal
     enabled: false
-    topics: [ai, markets, social]
-    query: '(AI OR OpenAI OR Nvidia OR semiconductor OR earnings) -is:retweet lang:en'
+    topics: [ai, research, social]
+    accounts:
+      - sama
+      - gdb
+      - karpathy
+      - OpenAI
+      - AnthropicAI
+      - GoogleDeepMind
+      - demishassabis
+      - ylecun
+      - JeffDean
+      - _akhaliq
+      - arankomatsuzaki
+      - swyx
+      - simonw
+      - emollick
+      - rowancheung
+      - drjimfan
+      - alexandr_wang
+    limit: 12
+  # Disabled by default — see the note on x_ai above (enable + set a working egress in `url`).
+  - id: x_markets
+    name: X FinTwit
+    connector: x
+    url: https://syndication.twitter.com
+    trust_tier: community_social
+    source_role: fast_signal
+    enabled: false
+    topics: [markets, blue_chips, social]
+    accounts:
+      - DeItaone
+      - unusual_whales
+      - StockMKTNewz
+      - KobeissiLetter
+      - charliebilello
+    limit: 12
+  # --- Buzz-carrying sources (engagement counts feed the buzz score) ---
+  - id: lobsters
+    name: Lobsters
+    connector: lobsters
+    url: https://lobste.rs
+    trust_tier: community_social
+    source_role: fast_signal
+    enabled: true
+    topics: [tech, developer_tools, ai]
     limit: 25
+  - id: devto_top
+    name: Dev.to Top
+    connector: devto
+    url: https://dev.to/api
+    trust_tier: community_social
+    source_role: fast_signal
+    enabled: true
+    topics: [developer_tools, ai]
+    top_days: 1
+    limit: 25
+  - id: stocktwits_trending
+    name: StockTwits Trending
+    connector: stocktwits
+    url: https://api.stocktwits.com/api/2
+    trust_tier: community_social
+    source_role: fast_signal
+    enabled: true
+    topics: [markets, blue_chips, social]
+    limit: 25
+  - id: github_trending_ai
+    name: GitHub Trending AI
+    connector: github_trending
+    url: https://api.github.com
+    trust_tier: community_social
+    source_role: fast_signal
+    enabled: true
+    topics: [developer_tools, ai, research]
+    # NOTE: GitHub search 422s if multiple OR'd topic qualifiers are combined with a
+    # pushed:/created: range. Keep a single topic qualifier here.
+    query: topic:llm
+    window_days: 30
+    limit: 25
+  # --- Curated AI newsletters (pre-filtered high signal) ---
+  - id: simon_willison
+    name: Simon Willison's Weblog
+    connector: rss
+    url: https://simonwillison.net/atom/everything/
+    trust_tier: trusted_media
+    source_role: deep_analysis
+    enabled: true
+    topics: [ai, developer_tools, research]
+    limit: 20
+  - id: import_ai
+    name: Import AI
+    connector: rss
+    url: https://jack-clark.net/feed/
+    trust_tier: trusted_media
+    source_role: deep_analysis
+    enabled: true
+    topics: [ai, research, policy]
+    limit: 10
+  - id: interconnects
+    name: Interconnects
+    connector: rss
+    url: https://www.interconnects.ai/feed
+    trust_tier: trusted_media
+    source_role: deep_analysis
+    enabled: true
+    topics: [ai, research]
+    limit: 10
+  - id: ahead_of_ai
+    name: Ahead of AI
+    connector: rss
+    url: https://magazine.sebastianraschka.com/feed
+    trust_tier: trusted_media
+    source_role: deep_analysis
+    enabled: true
+    topics: [ai, research]
+    limit: 10
+  - id: latent_space
+    name: Latent Space
+    connector: rss
+    url: https://www.latent.space/feed
+    trust_tier: trusted_media
+    source_role: deep_analysis
+    enabled: true
+    topics: [ai, developer_tools]
+    limit: 10
+  - id: the_batch
+    name: The Batch (DeepLearning.AI)
+    connector: rss
+    url: https://www.deeplearning.ai/the-batch/feed/
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [ai, research]
+    limit: 10
+  - id: marktechpost
+    name: MarkTechPost
+    connector: rss
+    url: https://www.marktechpost.com/feed/
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [ai, research, developer_tools]
+    limit: 15
+  # --- Markets / macro / policy primary origins ---
+  - id: fed_press_releases
+    name: Federal Reserve Press Releases
+    connector: rss
+    url: https://www.federalreserve.gov/feeds/press_all.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [markets, policy]
+    limit: 20
+  - id: seeking_alpha_market_currents
+    name: Seeking Alpha Market Currents
+    connector: rss
+    url: https://seekingalpha.com/market_currents.xml
+    trust_tier: trusted_media
+    source_role: context
+    enabled: true
+    topics: [markets, blue_chips, analyst_ratings]
+    limit: 20
+  - id: ftc_press_releases
+    name: FTC Press Releases
+    connector: rss
+    url: https://www.ftc.gov/feeds/press-release.xml
+    trust_tier: primary_official
+    source_role: primary_truth
+    enabled: true
+    topics: [policy]
+    limit: 15
   - id: uploads
     name: Manual Uploads
     connector: uploads

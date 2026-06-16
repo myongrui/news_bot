@@ -14,8 +14,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from newsbot.config import load_app_config
+from newsbot.curation import CurationPolicy
 from newsbot.db import Database
-from newsbot.digest import _iso_week
+from newsbot.digest import SECTION_ORDER, SECTION_TITLES, _iso_week, read_time_minutes, section_for
 from newsbot.scheduler import create_scheduler
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -27,6 +28,7 @@ def create_app(*, start_scheduler: bool = True) -> FastAPI:
     db = Database(config.settings.sqlite_path)
     db.init()
     db.upsert_sources(config.sources)
+    curation = CurationPolicy(config.curation)
     scheduler = create_scheduler(config) if start_scheduler else None
 
     @asynccontextmanager
@@ -48,7 +50,7 @@ def create_app(*, start_scheduler: bool = True) -> FastAPI:
         return templates.TemplateResponse(
             request,
             "day.html",
-            _digest_context(db, digest, clusters, title="Latest Daily Brief"),
+            _digest_context(db, curation, digest, clusters, title="Latest Daily Brief"),
         )
 
     @app.get("/day/{day}")
@@ -60,7 +62,7 @@ def create_app(*, start_scheduler: bool = True) -> FastAPI:
         return templates.TemplateResponse(
             request,
             "day.html",
-            _digest_context(db, digest, clusters, title=f"Daily Brief {day}"),
+            _digest_context(db, curation, digest, clusters, title=f"Daily Brief {day}"),
         )
 
     @app.get("/week/{week_id}")
@@ -71,7 +73,7 @@ def create_app(*, start_scheduler: bool = True) -> FastAPI:
         return templates.TemplateResponse(
             request,
             "week.html",
-            _digest_context(db, digest, clusters, title=f"Weekly Brief {week_id}"),
+            _digest_context(db, curation, digest, clusters, title=f"Weekly Brief {week_id}"),
         )
 
     @app.get("/topic/{slug}")
@@ -152,15 +154,38 @@ def create_app(*, start_scheduler: bool = True) -> FastAPI:
     return app
 
 
-def _digest_context(db: Database, digest: Any, clusters: list[Any], *, title: str) -> dict[str, Any]:
+def _digest_context(
+    db: Database,
+    curation: CurationPolicy,
+    digest: Any,
+    clusters: list[Any],
+    *,
+    title: str,
+) -> dict[str, Any]:
     payload = json.loads(digest["payload_json"]) if digest else {}
     digest_payload = payload.get("digest", {})
-    cluster_views = [_cluster_view(db, row) for row in clusters]
+    sorted_rows = sorted(clusters, key=curation.sort_key, reverse=True)
+    sections: dict[str, list[dict[str, Any]]] = {key: [] for key in SECTION_ORDER}
+    quick_links: list[dict[str, Any]] = []
+    for row in sorted_rows:
+        view = _cluster_view(db, row)
+        section = view["section"]
+        full = sections[section]
+        if curation.is_context_only(row) or len(full) >= curation.section_limit(section):
+            quick_links.append(view)
+        else:
+            full.append(view)
+    section_blocks = [
+        {"key": key, "title": SECTION_TITLES[key], "clusters": sections[key]}
+        for key in SECTION_ORDER
+        if sections[key]
+    ]
     return {
         "title": digest["title"] if digest else title,
         "digest": digest,
         "digest_payload": digest_payload,
-        "clusters": cluster_views,
+        "sections": section_blocks,
+        "quick_links": quick_links[: curation.section_limit("quick_links")],
         "counts": db.counts(),
         "current_week": _iso_week(datetime.now(UTC)),
     }
@@ -168,22 +193,39 @@ def _digest_context(db: Database, digest: Any, clusters: list[Any], *, title: st
 
 def _cluster_view(db: Database, row: Any) -> dict[str, Any]:
     summary = json.loads(row["summary_json"] or "{}")
+    topics = json.loads(row["topic_slugs_json"] or "[]")
+    tickers = json.loads(row["ticker_symbols_json"] or "[]")
+    documents = db.cluster_documents(row["id"])[:3]
+    longest_text = max((doc["text"] or "" for doc in documents), key=len, default="")
     return {
         "id": row["id"],
         "title": summary.get("title") or row["title"],
+        "headline": summary.get("headline") or summary.get("title") or row["title"],
+        "summary": summary.get("summary") or summary.get("why_it_matters"),
         "confidence": summary.get("confidence") or row["confidence"],
         "why_it_matters": summary.get("why_it_matters"),
         "bullets": summary.get("bullets", []),
-        "topics": json.loads(row["topic_slugs_json"] or "[]"),
-        "tickers": json.loads(row["ticker_symbols_json"] or "[]"),
+        "topics": topics,
+        "tickers": tickers,
         "score": row["reliability_score"],
         "frontier_score": row["frontier_score"],
         "frontier_category": row["frontier_category"],
         "frontier_reasons": json.loads(row["frontier_reasons_json"] or "[]"),
+        "buzz_score": curation_buzz(row),
+        "section": section_for(topics, tickers, row["frontier_category"]),
+        "read_time_min": read_time_minutes(longest_text),
+        "url": documents[0]["url"] if documents else "",
         "feedback": db.get_cluster_feedback(row["id"]),
         "is_social_signal": bool(row["is_social_signal"]),
-        "documents": db.cluster_documents(row["id"])[:3],
+        "documents": documents,
     }
+
+
+def curation_buzz(row: Any) -> float:
+    try:
+        return float(row["buzz_score"] or 0)
+    except (IndexError, KeyError, TypeError):
+        return 0.0
 
 
 def _validate_day(value: str) -> None:

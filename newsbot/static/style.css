@@ -184,6 +184,56 @@ h1 {
   line-height: 1.25;
 }
 
+.brief-section {
+  margin-top: 28px;
+}
+
+.section-title {
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--line);
+  font-size: 19px;
+}
+
+.story-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.story-head h2 {
+  margin-bottom: 0;
+}
+
+.read-time {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.summary {
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+
+.quick-links .tight-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.quick-links .tight-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.quick-links .read-time {
+  margin-left: 6px;
+}
+
 .why {
   margin-bottom: 10px;
   color: var(--muted);

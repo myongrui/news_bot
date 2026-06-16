@@ -28,6 +28,8 @@ class StorySummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     title: str = Field(min_length=1)
+    headline: str = Field(default="", max_length=120)
+    summary: str = Field(default="")
     confidence: str = Field(pattern="^(high|medium|low|caution)$")
     why_it_matters: str = Field(min_length=1)
     frontier_category: str = Field(default="strategic_context", min_length=1)
@@ -73,7 +75,9 @@ class OpenAIResponsesClient:
             "rules": [
                 "Use only the supplied documents.",
                 "Do not include buy/sell/hold recommendations.",
-                "Every factual bullet must be traceable to at least one supplied URL.",
+                "Write 'headline' as a punchy, specific TLDR-style title under ~80 characters.",
+                "Write 'summary' as 2-3 factual sentences (the TLDR body) — no hype, no chrome.",
+                "Every factual bullet/sentence must be traceable to at least one supplied URL.",
                 "Explain why a hybrid AI builder/investor should care.",
                 "Do not imply trading advice or action.",
                 "If the documents conflict, set confidence to caution.",
@@ -162,9 +166,11 @@ class LocalStructuredClient:
     async def summarize_story(self, documents: list[dict[str, Any]], confidence: str) -> StorySummary:
         first = documents[0] if documents else {}
         title = clean_text(str(first.get("title") or "Untitled story"), max_chars=140)
+        headline = clean_text(title, max_chars=120)
         citations = [str(doc.get("url")) for doc in documents if doc.get("url")]
         snippets = [clean_text(str(doc.get("snippet") or ""), max_chars=220) for doc in documents]
         bullets = [snippet for snippet in snippets if snippet][:3] or ["No extractable summary was available."]
+        summary = clean_text(" ".join(snippets), max_chars=400) or title
         claims = [
             ClaimSummary(
                 text=bullet,
@@ -175,6 +181,8 @@ class LocalStructuredClient:
         ]
         return StorySummary(
             title=title,
+            headline=headline,
+            summary=summary,
             confidence=confidence if confidence in {"high", "medium", "low", "caution"} else "medium",
             why_it_matters="This item is relevant to the configured AI, tech, research, or market watchlist.",
             frontier_category="strategic_context",

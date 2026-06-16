@@ -144,13 +144,23 @@ alerts:
   min_frontier_score: 68
   max_age_hours: 72
   require_priority_topic_or_ticker: true
-  suppress_social_only: true
+  # Social-only stories may now alert when they are genuinely being discussed.
+  suppress_social_only: false
+  min_engagement_for_social_alert: 0.55
 
 digests:
-  daily_max_clusters: 20
-  weekly_max_clusters: 50
+  # TLDR-style selectivity: a tight, sectioned brief rather than a firehose.
+  daily_max_clusters: 24
+  weekly_max_clusters: 60
   include_social_signals: true
   social_signal_limit: 8
+  # A non-discussed, non-watchlist blog-only story is demoted to Quick Links below this buzz.
+  min_buzz_for_blog_only: 0.15
+  section_limits:
+    ai: 8
+    markets: 6
+    novelty: 8
+    quick_links: 12
 
 frontier:
   technical_keywords:

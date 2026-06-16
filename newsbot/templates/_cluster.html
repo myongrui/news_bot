@@ -1,28 +1,18 @@
 <article class="story">
+  <div class="story-head">
+    <h2><a href="{{ cluster.url or (cluster.documents[0].url if cluster.documents else '#') }}" target="_blank" rel="noreferrer">{{ cluster.headline or cluster.title }}</a></h2>
+    <span class="read-time">{{ cluster.read_time_min }} min read</span>
+  </div>
   <div class="story-meta">
-    <span class="frontier-score">F{{ cluster.frontier_score | int }}</span>
-    <span class="tag">{{ cluster.frontier_category }}</span>
-    <span class="confidence confidence-{{ cluster.confidence }}">{{ cluster.confidence }}</span>
-    {% if cluster.is_social_signal %}
-    <span class="tag">social signal</span>
-    {% endif %}
     {% for ticker in cluster.tickers %}
     <span class="ticker">{{ ticker }}</span>
     {% endfor %}
+    {% if cluster.is_social_signal %}
+    <span class="tag">discussion</span>
+    {% endif %}
   </div>
-  <h2>{{ cluster.title }}</h2>
-  {% if cluster.why_it_matters %}
-  <p class="why">{{ cluster.why_it_matters }}</p>
-  {% endif %}
-  {% if cluster.frontier_reasons %}
-  <p class="why ranked">Ranked for {{ cluster.frontier_reasons[:3] | join(", ") }}</p>
-  {% endif %}
-  {% if cluster.bullets %}
-  <ul>
-    {% for bullet in cluster.bullets[:3] %}
-    <li>{{ bullet }}</li>
-    {% endfor %}
-  </ul>
+  {% if cluster.summary %}
+  <p class="summary">{{ cluster.summary }}</p>
   {% endif %}
   {% if cluster.documents %}
   <div class="sources">

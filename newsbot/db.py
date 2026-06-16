@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS story_clusters (
   frontier_score REAL NOT NULL DEFAULT 0,
   frontier_category TEXT NOT NULL DEFAULT 'unscored',
   frontier_reasons_json TEXT NOT NULL DEFAULT '[]',
+  buzz_score REAL NOT NULL DEFAULT 0,
   summary_json TEXT,
   alert_queued_at TEXT
 );
@@ -184,6 +185,8 @@ class Database:
             conn.execute(
                 "ALTER TABLE story_clusters ADD COLUMN frontier_reasons_json TEXT NOT NULL DEFAULT '[]'"
             )
+        if "buzz_score" not in columns:
+            conn.execute("ALTER TABLE story_clusters ADD COLUMN buzz_score REAL NOT NULL DEFAULT 0")
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS story_feedback (
@@ -332,6 +335,7 @@ class Database:
         frontier_score: float = 0,
         frontier_category: str = "unscored",
         frontier_reasons: list[str] | None = None,
+        buzz_score: float = 0,
         summary: dict[str, Any] | None = None,
     ) -> None:
         now = utc_now()
@@ -353,10 +357,10 @@ class Database:
                 INSERT INTO story_clusters (
                   id, title, canonical_url, first_seen_at, updated_at, topic_slugs_json,
                   ticker_symbols_json, reliability_score, confidence, is_social_signal,
-                  frontier_score, frontier_category, frontier_reasons_json,
+                  frontier_score, frontier_category, frontier_reasons_json, buzz_score,
                   summary_json
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                   title=excluded.title,
                   updated_at=excluded.updated_at,
@@ -368,6 +372,7 @@ class Database:
                   frontier_score=excluded.frontier_score,
                   frontier_category=excluded.frontier_category,
                   frontier_reasons_json=excluded.frontier_reasons_json,
+                  buzz_score=excluded.buzz_score,
                   summary_json=COALESCE(excluded.summary_json, story_clusters.summary_json)
                 """,
                 (
@@ -384,6 +389,7 @@ class Database:
                     frontier_score,
                     frontier_category,
                     json.dumps(frontier_reasons or []),
+                    buzz_score,
                     json.dumps(summary) if summary else None,
                 ),
             )
@@ -530,6 +536,7 @@ class Database:
         frontier_score: float,
         frontier_category: str,
         frontier_reasons: list[str],
+        buzz_score: float = 0,
     ) -> None:
         with self.connect() as conn:
             conn.execute(
@@ -538,6 +545,7 @@ class Database:
                 SET frontier_score = ?,
                     frontier_category = ?,
                     frontier_reasons_json = ?,
+                    buzz_score = ?,
                     updated_at = updated_at
                 WHERE id = ?
                 """,
@@ -545,6 +553,7 @@ class Database:
                     frontier_score,
                     frontier_category,
                     json.dumps(frontier_reasons),
+                    buzz_score,
                     cluster_id,
                 ),
             )

@@ -3,19 +3,24 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
-from typing import Any
 
 from newsbot.types import SourceConfig
 from newsbot.utils import clean_text, parse_datetime
 
 
+# Rebalanced for a discussion-first feed: official/blog sources no longer dominate on role
+# alone (they rank via the buzz band when actually discussed), and the discussion/fast-signal
+# role carries real weight instead of being a near-zero lead.
 SOURCE_ROLE_POINTS = {
-    "primary_truth": 25,
-    "deep_analysis": 22,
-    "context": 20,
-    "fast_signal": 8,
+    "primary_truth": 18,
+    "deep_analysis": 16,
+    "fast_signal": 14,
+    "context": 12,
     "unknown": 4,
 }
+
+# Max points contributed by social engagement ("buzz") — a first-class signal.
+BUZZ_MAX = 25
 
 TECHNICAL_KEYWORDS = {
     "agent",
@@ -105,6 +110,7 @@ class FrontierScorer:
         tickers: list[str],
         social_only: bool,
         source_count: int,
+        engagement: float = 0.0,
     ) -> FrontierResult:
         normalized = clean_text(text).lower()
         score = 0
@@ -156,9 +162,18 @@ class FrontierScorer:
         if corroboration_points:
             reasons.append("corroborated")
 
-        if social_only:
-            score = max(0, score - 20)
-            reasons.append("social_only_penalty")
+        buzz_points = round(min(BUZZ_MAX, max(0.0, engagement) * BUZZ_MAX))
+        score += buzz_points
+        if engagement >= 0.66:
+            reasons.append("buzz:high")
+        elif engagement >= 0.33:
+            reasons.append("buzz:medium")
+
+        # Social signal is now wanted, not penalized. Only nudge down social-only items that
+        # have no measurable discussion behind them.
+        if social_only and engagement <= 0:
+            score = max(0, score - 8)
+            reasons.append("social_no_buzz")
 
         category = self._category(
             technical_points=technical_points,

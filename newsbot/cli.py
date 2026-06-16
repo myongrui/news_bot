@@ -8,6 +8,7 @@ import sys
 from newsbot.config import load_app_config
 from newsbot.curation import CurationPolicy
 from newsbot.digest import DigestBuilder
+from newsbot.engagement import cluster_engagement
 from newsbot.db import Database
 from newsbot.frontier import FrontierScorer, source_role
 from newsbot.pipeline import NewsPipeline
@@ -31,7 +32,10 @@ def build_parser() -> argparse.ArgumentParser:
     ingest.add_argument(
         "--source",
         default="all",
-        choices=["all", "rss", "hn", "arxiv", "sec", "gdelt", "reddit", "uploads", "x"],
+        choices=[
+            "all", "rss", "hn", "arxiv", "sec", "gdelt", "reddit", "uploads", "x",
+            "lobsters", "devto", "stocktwits", "github_trending",
+        ],
     )
 
     digest = subparsers.add_parser("digest")
@@ -158,6 +162,9 @@ def main(argv: list[str] | None = None) -> None:
                 source_role(config.source_by_id(document["source_id"]))
                 for document in documents
             ]
+            engagement = cluster_engagement(
+                json.loads(document["metadata_json"] or "{}") for document in documents
+            )
             result = scorer.score(
                 text=f"{row['title']} {first['snippet']} {first['text'][:2000]}",
                 published_at=first["published_at"],
@@ -166,12 +173,14 @@ def main(argv: list[str] | None = None) -> None:
                 tickers=json.loads(row["ticker_symbols_json"] or "[]"),
                 social_only=bool(row["is_social_signal"]),
                 source_count=len(documents),
+                engagement=engagement,
             )
             db.update_cluster_frontier(
                 row["id"],
                 frontier_score=result.score,
                 frontier_category=result.category,
                 frontier_reasons=result.reasons,
+                buzz_score=engagement,
             )
             rescored += 1
         safe_print(f"Rescored {rescored} clusters")

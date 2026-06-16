@@ -12,6 +12,7 @@ from newsbot.collectors import COLLECTOR_TYPES
 from newsbot.config import AppConfig, load_app_config
 from newsbot.curation import CurationPolicy
 from newsbot.db import Database
+from newsbot.engagement import cluster_engagement
 from newsbot.fetch import DocumentExtractor
 from newsbot.frontier import FrontierScorer, source_role
 from newsbot.reliability import score_cluster
@@ -129,6 +130,9 @@ class NewsPipeline:
             for row in existing_docs
         ]
         source_roles.append(source_role(source))
+        cluster_metadata = [_row_metadata(row) for row in existing_docs]
+        cluster_metadata.append(document.metadata)
+        engagement = cluster_engagement(cluster_metadata)
         frontier = self.frontier.score(
             text=source_text,
             published_at=document.published_at,
@@ -137,6 +141,7 @@ class NewsPipeline:
             tickers=tickers,
             social_only=reliability.social_only,
             source_count=len(existing_docs) + 1,
+            engagement=engagement,
         )
         self.db.upsert_cluster(
             cluster_id=cluster_id,
@@ -151,6 +156,7 @@ class NewsPipeline:
             frontier_score=frontier.score,
             frontier_category=frontier.category,
             frontier_reasons=frontier.reasons,
+            buzz_score=engagement,
         )
         documents = self.db.cluster_documents(cluster_id)
         summary_documents = [
@@ -182,6 +188,7 @@ class NewsPipeline:
             frontier_score=frontier.score,
             frontier_category=frontier.category,
             frontier_reasons=frontier.reasons,
+            buzz_score=engagement,
             summary=summary_payload,
         )
         self.db.save_claims(
@@ -196,6 +203,7 @@ class NewsPipeline:
             tickers=tickers,
             social_only=reliability.social_only,
             published_at=document.published_at,
+            engagement=engagement,
         )
         alert_was_queued = False
         if queue_alert and alert_decision.keep:
@@ -224,6 +232,13 @@ class NewsPipeline:
                 self.db.mark_telegram_sent(message["id"])
                 sent += 1
         return sent, failed
+
+
+def _row_metadata(row: object) -> dict:
+    try:
+        return json.loads(row["metadata_json"] or "{}")
+    except (KeyError, TypeError, ValueError):
+        return {}
 
 
 def run_ingest(source: str = "all") -> IngestReport:

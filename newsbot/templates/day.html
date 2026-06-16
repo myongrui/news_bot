@@ -16,7 +16,7 @@
 
 {% if digest_payload.key_points %}
 <section class="band">
-  <h2>Key Points</h2>
+  <h2>In Brief</h2>
   <ul class="tight-list">
     {% for point in digest_payload.key_points %}
     <li>{{ point }}</li>
@@ -25,12 +25,27 @@
 </section>
 {% endif %}
 
-<section class="story-grid">
-  {% for cluster in clusters %}
-  {% include "_cluster.html" %}
-  {% else %}
-  <div class="empty">No stories captured yet.</div>
-  {% endfor %}
+{% for section in sections %}
+<section class="brief-section">
+  <h2 class="section-title">{{ section.title }}</h2>
+  <div class="story-grid">
+    {% for cluster in section.clusters %}
+    {% include "_cluster.html" %}
+    {% endfor %}
+  </div>
 </section>
-{% endblock %}
+{% else %}
+<div class="empty">No stories captured yet.</div>
+{% endfor %}
 
+{% if quick_links %}
+<section class="brief-section quick-links">
+  <h2 class="section-title">🔗 Quick Links</h2>
+  <ul class="tight-list">
+    {% for cluster in quick_links %}
+    <li><a href="{{ cluster.url or (cluster.documents[0].url if cluster.documents else '#') }}" target="_blank" rel="noreferrer">{{ cluster.headline or cluster.title }}</a> <span class="read-time">{{ cluster.read_time_min }} min</span></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

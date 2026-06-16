@@ -72,9 +72,17 @@ def format_cluster_alert(cluster: Any, documents: list[Any]) -> str:
     return text
 
 
-def format_digest_message(title: str, url: str, overview: str) -> str:
-    return (
-        f"<b>{html.escape(title)}</b>\n"
-        f"{html.escape(overview)}\n\n"
-        f'<a href="{html.escape(url)}">Open digest</a>'
-    )
+def format_digest_message(
+    title: str,
+    url: str,
+    overview: str,
+    highlights: list[str] | None = None,
+) -> str:
+    lines = [f"<b>{html.escape(title)}</b>", html.escape(overview)]
+    if highlights:
+        lines.append("")
+        for highlight in highlights[:5]:
+            lines.append(f"• {html.escape(highlight)}")
+    lines.append("")
+    lines.append(f'<a href="{html.escape(url)}">Open digest</a>')
+    return "\n".join(lines)

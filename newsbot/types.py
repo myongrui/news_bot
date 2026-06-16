@@ -22,6 +22,10 @@ class Connector(StrEnum):
     REDDIT = "reddit"
     X = "x"
     UPLOADS = "uploads"
+    LOBSTERS = "lobsters"
+    DEVTO = "devto"
+    STOCKTWITS = "stocktwits"
+    GITHUB_TRENDING = "github_trending"
 
 
 class Confidence(StrEnum):

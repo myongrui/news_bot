@@ -37,7 +37,7 @@ def test_old_official_item_stays_digest_level():
     assert "old" in result.reasons
 
 
-def test_social_only_item_is_penalized():
+def test_social_only_item_without_buzz_is_nudged_down():
     result = FrontierScorer().score(
         text="HN is discussing a new AI agent benchmark and GPU inference result.",
         published_at=datetime.now(UTC).isoformat(),
@@ -46,14 +46,41 @@ def test_social_only_item_is_penalized():
         tickers=[],
         social_only=True,
         source_count=1,
+        engagement=0.0,
     )
 
     assert result.category == "early_signal"
-    assert "social_only_penalty" in result.reasons
-    assert result.score < 75
+    assert "social_no_buzz" in result.reasons
 
 
-def test_corroborated_social_and_context_can_be_frontier_worthy():
+def test_high_buzz_social_outranks_quiet_blog():
+    scorer = FrontierScorer()
+    buzzy_social = scorer.score(
+        text="HN is discussing a new AI agent benchmark and GPU inference result.",
+        published_at=datetime.now(UTC).isoformat(),
+        source_roles=["fast_signal"],
+        topics=["ai"],
+        tickers=[],
+        social_only=True,
+        source_count=1,
+        engagement=0.9,
+    )
+    quiet_blog = scorer.score(
+        text="A company published a general AI literacy blog post.",
+        published_at=datetime.now(UTC).isoformat(),
+        source_roles=["primary_truth"],
+        topics=["ai"],
+        tickers=[],
+        social_only=False,
+        source_count=1,
+        engagement=0.0,
+    )
+
+    assert buzzy_social.score > quiet_blog.score
+    assert "buzz:high" in buzzy_social.reasons
+
+
+def test_corroborated_discussion_can_be_frontier_worthy_with_buzz():
     result = FrontierScorer().score(
         text="A trusted report confirms an AI agent model release with evals and inference benchmarks.",
         published_at=datetime.now(UTC).isoformat(),
@@ -62,6 +89,7 @@ def test_corroborated_social_and_context_can_be_frontier_worthy():
         tickers=[],
         social_only=False,
         source_count=2,
+        engagement=0.5,
     )
 
     assert result.score >= 75
@@ -119,7 +147,7 @@ def test_blue_chip_analyst_note_scores_as_market_impact():
     )
 
     assert result.category == "market_impact"
-    assert result.score >= 75
+    assert result.score >= 65
 
 
 def test_policy_regulatory_item_gets_policy_category():
@@ -134,4 +162,4 @@ def test_policy_regulatory_item_gets_policy_category():
     )
 
     assert result.category == "policy_and_regulation"
-    assert result.score >= 75
+    assert result.score >= 65

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 import httpx
 
 from newsbot.collectors.base import BaseCollector, CollectorResult
@@ -8,36 +10,54 @@ from newsbot.utils import parse_datetime
 
 
 class HackerNewsCollector(BaseCollector):
+    """Collect Hacker News stories via the Algolia search API.
+
+    Uses the front-page / points-threshold query rather than the ``topstories`` firehose so we
+    ingest what is actually being discussed. Algolia returns ``points`` and ``num_comments``
+    directly, which feed the engagement (buzz) score.
+    """
+
     async def collect(self, client: httpx.AsyncClient) -> CollectorResult:
         try:
-            limit = int(self.source.options.get("limit", 50))
-            base_url = self.source.url.rstrip("/")
-            ids_response = await client.get(f"{base_url}/topstories.json")
-            ids_response.raise_for_status()
-            story_ids = ids_response.json()[:limit]
+            options = self.source.options
+            limit = int(options.get("limit", 50))
+            min_points = int(options.get("min_points", 0))
+            # Default to the Algolia endpoint; legacy Firebase URLs are normalized below.
+            base_url = str(self.source.url).rstrip("/")
+            if "algolia" not in base_url:
+                base_url = "https://hn.algolia.com/api/v1"
+            tags = options.get("tags", "front_page")
+            params: dict[str, str] = {
+                "tags": str(tags),
+                "hitsPerPage": str(limit),
+            }
+            if min_points > 0:
+                params["numericFilters"] = f"points>={min_points}"
+            response = await client.get(f"{base_url}/search", params=params)
+            response.raise_for_status()
+            hits = response.json().get("hits", [])
             items: list[RawItem] = []
-            for story_id in story_ids:
-                response = await client.get(f"{base_url}/item/{story_id}.json")
-                if response.status_code >= 400:
+            for hit in hits:
+                story_id = hit.get("objectID")
+                if not story_id:
                     continue
-                story = response.json() or {}
-                if story.get("type") != "story":
-                    continue
-                title = story.get("title") or "Untitled HN story"
-                url = story.get("url") or f"https://news.ycombinator.com/item?id={story_id}"
+                comments_url = f"https://news.ycombinator.com/item?id={story_id}"
+                title = hit.get("title") or hit.get("story_title") or "Untitled HN story"
+                url = hit.get("url") or hit.get("story_url") or comments_url
                 items.append(
                     RawItem(
                         source_id=self.source.id,
                         external_id=str(story_id),
                         title=title,
                         url=url,
-                        published_at=parse_datetime(_unix_to_iso(story.get("time"))),
-                        author=story.get("by"),
-                        content=story.get("text"),
+                        published_at=parse_datetime(_created_at(hit)),
+                        author=hit.get("author"),
+                        content=hit.get("story_text") or hit.get("comment_text"),
                         payload={
                             "connector": "hn",
-                            "score": story.get("score"),
-                            "comments_url": f"https://news.ycombinator.com/item?id={story_id}",
+                            "score": hit.get("points"),
+                            "comments": hit.get("num_comments"),
+                            "comments_url": comments_url,
                         },
                     )
                 )
@@ -46,10 +66,11 @@ class HackerNewsCollector(BaseCollector):
             return self.failed(exc)
 
 
-def _unix_to_iso(value: int | None) -> str | None:
-    if not value:
-        return None
-    from datetime import UTC, datetime
-
-    return datetime.fromtimestamp(int(value), UTC).isoformat()
-
+def _created_at(hit: dict) -> str | None:
+    value = hit.get("created_at")
+    if value:
+        return str(value)
+    timestamp = hit.get("created_at_i")
+    if timestamp:
+        return datetime.fromtimestamp(int(timestamp), UTC).isoformat()
+    return None

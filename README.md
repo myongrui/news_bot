@@ -4,6 +4,23 @@ Newsbot is a local-first Python app that collects public tech, AI, market, socia
 
 ## Quick Start
 
+Linux / macOS (bash):
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+cp .env.example .env        # optional — the app runs offline without it
+newsbot web
+```
+
+Open `http://127.0.0.1:8000`.
+
+Without activating the venv you can also call the entry point directly, e.g. `.venv/bin/newsbot web`.
+
+<details>
+<summary>Windows (PowerShell)</summary>
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -11,12 +28,11 @@ pip install -e ".[dev]"
 Copy-Item .env.example .env
 newsbot web
 ```
-
-Open `http://127.0.0.1:8000`.
+</details>
 
 Docker:
 
-```powershell
+```bash
 docker compose up --build
 ```
 
@@ -38,8 +54,9 @@ Without OpenAI or Telegram credentials, the app can still ingest and render loca
 
 ## CLI
 
-```powershell
-newsbot ingest --source all
+```bash
+newsbot ingest --source all       # or: hn, x, reddit, lobsters, devto,
+                                  # stocktwits, github_trending, rss, arxiv, sec, gdelt
 newsbot digest --period daily
 newsbot digest --period weekly
 newsbot alerts run
@@ -47,7 +64,7 @@ newsbot telegram test
 newsbot telegram list --status pending --limit 10
 newsbot curate preview --limit 20
 newsbot curate rescore --limit 1000
-newsbot web
+newsbot web                       # add --no-scheduler to disable background ingest
 ```
 
 ## Frontier Policy
