@@ -21,6 +21,11 @@ from newsbot.types import Document
 from newsbot.utils import canonicalize_url, normalize_title, stable_id
 
 
+# Sources whose content is heterogeneous; their configured topics are a description of the feed,
+# not of each item, so we don't seed them onto individual stories during classification.
+AGGREGATOR_CONNECTORS = {"hn", "reddit", "x", "lobsters", "devto", "stocktwits", "github_trending"}
+
+
 @dataclass(frozen=True)
 class IngestReport:
     collected: int = 0
@@ -115,7 +120,11 @@ class NewsPipeline:
         if source is None:
             return None, False
         source_text = f"{document.title}\n{document.snippet}\n{document.text[:2000]}"
-        topics = classify_topics(source_text, self.config.topics, source.topics)
+        # Aggregator/social sources carry heterogeneous content (HN front page, subreddits,
+        # X timelines), so their configured topics must NOT be seeded onto every item — that
+        # mislabels off-topic posts as on-watchlist. Classify those purely on content.
+        seed_topics = () if source.connector.value in AGGREGATOR_CONNECTORS else source.topics
+        topics = classify_topics(source_text, self.config.topics, seed_topics)
         tickers = classify_tickers(source_text, self.config.tickers)
         cluster_key = canonicalize_url(document.url)
         if document.metadata.get("connector") in {"reddit", "x", "hn"} and not tickers:

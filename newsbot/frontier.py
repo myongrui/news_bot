@@ -32,7 +32,7 @@ TECHNICAL_KEYWORDS = {
     "codex",
     "coding agent",
     "copilot",
-    "cursor",
+    "cursor ide",
     "eval",
     "evals",
     "evaluation",

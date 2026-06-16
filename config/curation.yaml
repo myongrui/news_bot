@@ -184,7 +184,7 @@ frontier:
     - copilot
     - codex
     - claude code
-    - cursor
+    - cursor ide
     - github actions
     - langchain
     - langgraph

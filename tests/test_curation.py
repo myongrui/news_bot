@@ -88,18 +88,35 @@ def _social_alert_policy():
     )
 
 
-def test_high_buzz_social_alert_is_allowed():
+def test_high_buzz_on_topic_social_alert_is_allowed():
     decision = _social_alert_policy().alert_allowed(
         reliability_allowed=False,  # single social source: reliability gate would normally block
         reliability_score=0.42,
         frontier_score=80,
-        topics=["startups"],  # no priority topic — high buzz bypasses the watchlist requirement
+        topics=["ai"],  # matches a priority topic via content
         tickers=[],
         social_only=True,
         engagement=0.8,
     )
 
     assert decision.keep is True
+
+
+def test_off_topic_high_buzz_social_alert_is_rejected():
+    # A viral but off-watchlist social post (e.g. a general-interest HN essay) must not alert,
+    # even with high buzz.
+    decision = _social_alert_policy().alert_allowed(
+        reliability_allowed=False,
+        reliability_score=0.42,
+        frontier_score=80,
+        topics=["startups"],  # no priority topic/ticker
+        tickers=[],
+        social_only=True,
+        engagement=0.9,
+    )
+
+    assert decision.keep is False
+    assert decision.reason == "no_priority_topic_or_ticker"
 
 
 def test_low_buzz_social_alert_is_suppressed():

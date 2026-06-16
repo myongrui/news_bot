@@ -57,6 +57,26 @@ def test_classify_blue_chip_analyst_language():
     assert classify_tickers(text, tickers) == ["JPM", "LLY"]
 
 
+def test_mouse_cursor_does_not_match_cursor_ide():
+    topics = [
+        TopicConfig(slug="developer_tools", name="Developer Tools", keywords=("cursor ide", "copilot")),
+    ]
+    # A general-interest essay that happens to mention a mouse cursor must not be tagged.
+    essay = "The first time I emailed a stranger my cursor hovered over Send for five minutes."
+
+    assert classify_topics(essay, topics) == []
+    assert classify_topics("I switched my editor to Cursor IDE for agentic coding.", topics) == [
+        "developer_tools"
+    ]
+
+
+def test_no_seed_topics_means_content_only():
+    # Aggregator sources pass no seed topics, so an off-topic item gets no tags.
+    topics = [TopicConfig(slug="ai", name="AI", keywords=("llm", "model"))]
+    assert classify_topics("A personal essay about writing to strangers.", topics, ()) == []
+    assert classify_topics("A new LLM was released.", topics, ()) == ["ai"]
+
+
 def test_classify_policy_regulation_language():
     topics = [
         TopicConfig(

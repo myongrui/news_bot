@@ -116,8 +116,13 @@ class CurationPolicy:
         if self._older_than_hours(published_at, self.alert_max_age_hours):
             return CurationDecision(False, "too_old_for_alert")
 
-        # Social-only path: gate on real discussion (buzz), not trusted corroboration. A single
-        # genuinely viral post can alert and bypasses the watchlist requirement.
+        # Relevance gate applies to every alert: it must actually match a watchlist topic/ticker.
+        # This keeps popular-but-off-topic social posts (e.g. a viral general-interest HN essay)
+        # out of alerts even when their buzz is high.
+        if self.require_priority_for_alert and not self._matches_priority(topics, tickers):
+            return CurationDecision(False, "no_priority_topic_or_ticker")
+
+        # Social-only path: gate on real discussion (buzz), not trusted corroboration.
         if social_only:
             if self.suppress_social_only_alerts:
                 return CurationDecision(False, "social_only")
@@ -125,17 +130,17 @@ class CurationPolicy:
                 return CurationDecision(False, "social_buzz_below_threshold")
             return CurationDecision(True, "kept")
 
-        # Non-social path: trusted-source reliability gate + watchlist relevance.
+        # Non-social path: trusted-source reliability gate.
         if not reliability_allowed:
             return CurationDecision(False, "reliability_gate")
         if reliability_score < self.alert_min_score:
             return CurationDecision(False, "score_below_threshold")
-        if self.require_priority_for_alert:
-            priority_topics = set(self.item_rules.get("priority_topics", []))
-            priority_tickers = set(self.item_rules.get("priority_tickers", []))
-            if not (priority_topics.intersection(topics) or priority_tickers.intersection(tickers)):
-                return CurationDecision(False, "no_priority_topic_or_ticker")
         return CurationDecision(True, "kept")
+
+    def _matches_priority(self, topics: list[str], tickers: list[str]) -> bool:
+        priority_topics = set(self.item_rules.get("priority_topics", []))
+        priority_tickers = set(self.item_rules.get("priority_tickers", []))
+        return bool(priority_topics.intersection(topics) or priority_tickers.intersection(tickers))
 
     def sort_key(self, cluster: Any) -> tuple[float, float, float, int]:
         topics = set(json.loads(cluster["topic_slugs_json"] or "[]"))
