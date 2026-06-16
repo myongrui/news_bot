@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from apscheduler.events import EVENT_JOB_ERROR, EVENT_JOB_EXECUTED
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
@@ -23,8 +24,13 @@ def create_scheduler(config: AppConfig) -> AsyncIOScheduler:
     async def send_alerts() -> None:
         await NewsPipeline(config=config).run_alerts()
 
+    def _after_ingest(event) -> None:
+        if event.job_id == "ingest_all" and event.exception is None:
+            scheduler.add_job(send_alerts, id="send_alerts", replace_existing=True, max_instances=1)
+
+    scheduler.add_listener(_after_ingest, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+
     scheduler.add_job(ingest_all, "interval", hours=2, id="ingest_all", max_instances=1)
-    scheduler.add_job(send_alerts, "interval", minutes=5, id="send_alerts", max_instances=1)
     scheduler.add_job(
         daily_digest,
         CronTrigger(hour=8, minute=30, timezone=config.settings.timezone),

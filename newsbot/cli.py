@@ -37,6 +37,11 @@ def build_parser() -> argparse.ArgumentParser:
             "lobsters", "devto", "stocktwits", "github_trending",
         ],
     )
+    ingest.add_argument(
+        "--no-send",
+        action="store_true",
+        help="Do not push queued Telegram messages after ingest (default: send them).",
+    )
 
     digest = subparsers.add_parser("digest")
     digest.add_argument("--period", choices=["daily", "weekly"], required=True)
@@ -68,16 +73,47 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+async def _ingest_then_send(source: str, send: bool):
+    """Run an ingest and, unless disabled, drain the entire pending Telegram queue."""
+    pipeline = NewsPipeline()
+    report = await pipeline.ingest(source)
+    sent = failed = 0
+    configured = True
+    if send:
+        settings = pipeline.config.settings
+        configured = TelegramClient(settings.telegram_bot_token, settings.telegram_chat_id).configured
+        if configured:
+            # run_alerts sends a bounded batch; loop until the queue is empty.
+            while True:
+                batch_sent, batch_failed = await pipeline.run_alerts()
+                sent += batch_sent
+                failed += batch_failed
+                if batch_sent + batch_failed == 0:
+                    break
+    return report, sent, failed, configured
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
     if args.command == "ingest":
-        report = asyncio.run(NewsPipeline().ingest(args.source))
+        report, sent, failed, configured = asyncio.run(
+            _ingest_then_send(args.source, send=not args.no_send)
+        )
         safe_print(
             "Ingest complete: "
             f"collected={report.collected} extracted={report.extracted} "
             f"clustered={report.clustered} alerts_queued={report.alerts_queued}"
         )
+        if args.no_send:
+            pass
+        elif not configured:
+            safe_print(
+                "Telegram not configured; skipped sending. "
+                "Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID to push messages."
+            )
+        else:
+            safe_print(f"Telegram: sent={sent} failed={failed}")
         return
     if args.command == "digest":
         digest_id = asyncio.run(DigestBuilder().build(args.period))

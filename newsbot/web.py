@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -42,6 +42,10 @@ def create_app(*, start_scheduler: bool = True) -> FastAPI:
 
     app = FastAPI(title="Newsbot", lifespan=lifespan)
     app.mount("/static", StaticFiles(directory=str(PACKAGE_DIR / "static")), name="static")
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    async def favicon():
+        return FileResponse(PACKAGE_DIR / "static" / "favicon.svg", media_type="image/svg+xml")
 
     @app.get("/")
     async def index(request: Request):
